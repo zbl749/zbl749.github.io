@@ -291,12 +291,37 @@
                 })
             })
             $.each(res, (k, v) => {
-                $('#no-q').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+                if (matchNum(rule = [
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D']
+                ], v)) {
+                    $('#no-q').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+                }
             })
         }
 
-        function matchNoKRRule(str) {
-            let list = noKRRule(), strArr = str.split('Q'), res = {};
+        function matchNum(rule, str) {
+            let matchNum = 0;
+            $.each(rule, (index, val) => {
+                let num = 0;
+                for (let i = 0; i <= str.length; i++) {
+                    if (0 <= val.indexOf(str[i])) {
+                        num += 1;
+                    }
+                }
+                if (num > 0) {
+                    matchNum += 1;
+                }
+            })
+            if (matchNum >= rule.length) {
+                return true;
+            }
+            return false;
+        }
+
+        function match(list, str) {
+            let strArr = str.split('Q'), res = {};
             $.each(strArr, (index, item) => {
                 let itemLen = item.length;
                 if (itemLen > 0) {
@@ -349,134 +374,57 @@
                     })
                 }
             })
+
+            return res;
+        }
+
+        function matchNoKRRule(str) {
+            let list = noKRRule();
+            let res = match(list, str);
             $.each(res, (k, v) => {
-                $('#no-kr').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+                if (matchNum(rule = [
+                    ['Q'],
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D']
+                ], v)) {
+                    $('#no-kr').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+                }
             })
         }
 
         function matchNoFILVRule(str) {
-            let list = noFILVRule(), strArr = str.split('Q'), res = {};
-            $.each(strArr, (index, item) => {
-                let itemLen = item.length;
-                if (itemLen > 0) {
-                    $.each(list, (key, val) => {
-                        let valLen = val.length;
-                        if (itemLen >= valLen) {
-                            let tmpStr = item.substr(-valLen), num = 0;
-                            let filter = [];
-                            for (let j = 0; j < valLen; j++) {
-                                $.each(val, (k, v) => {
-                                    if (-1 === filter.indexOf(j)) {
-                                        if (0 <= v.indexOf(tmpStr[j])) {
-                                            num += 1;
-                                            filter.push(j);
-                                        }
-                                    }
-                                })
-                            }
-                            if (num >= valLen) {
-                                if (-1 !== str.indexOf(tmpStr + 'Q')) {
-                                    res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
-                                }
-                                if (-1 !== str.indexOf('Q' + tmpStr)) {
-                                    res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
-                                }
-                            }
-                            if (0 != index) {
-                                let tmpStr = item.substr(0, valLen), num = 0;
-                                let filter = [];
-                                for (let j = 0; j < valLen; j++) {
-                                    $.each(val, (k, v) => {
-                                        if (-1 === filter.indexOf(j)) {
-                                            if (0 <= v.indexOf(tmpStr[j])) {
-                                                num += 1;
-                                                filter.push(j);
-                                            }
-                                        }
-                                    })
-                                }
-                                if (num >= valLen) {
-                                    if (-1 !== str.indexOf(tmpStr + 'Q')) {
-                                        res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
-                                    }
-                                    if (-1 !== str.indexOf('Q' + tmpStr)) {
-                                        res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
-                                    }
-                                }
-                            }
-                        }
-                    })
-                }
-            })
+            let list = noFILVRule();
+            let res = match(list, str);
             $.each(res, (k, v) => {
-                $('#no-filv').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+                if (matchNum(rule = [
+                    ['Q'],
+                    ['K', 'R'],
+                    ['E', 'D']
+                ], v)) {
+                    $('#no-filv').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+                }
             })
         }
 
         function matchNoEDRule(str) {
-            let list = noEDRule(), strArr = str.split('Q'), res = {};
-            $.each(strArr, (index, item) => {
-                let itemLen = item.length;
-                if (itemLen > 0) {
-                    $.each(list, (key, val) => {
-                        let valLen = val.length;
-                        if (itemLen >= valLen) {
-                            let tmpStr = item.substr(-valLen), num = 0;
-                            let filter = [];
-                            for (let j = 0; j < valLen; j++) {
-                                $.each(val, (k, v) => {
-                                    if (-1 === filter.indexOf(j)) {
-                                        if (0 <= v.indexOf(tmpStr[j])) {
-                                            num += 1;
-                                            filter.push(j);
-                                        }
-                                    }
-                                })
-                            }
-                            if (num >= valLen) {
-                                if (-1 !== str.indexOf(tmpStr + 'Q')) {
-                                    res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
-                                }
-                                if (-1 !== str.indexOf('Q' + tmpStr)) {
-                                    res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
-                                }
-                            }
-                            if (0 != index) {
-                                let tmpStr = item.substr(0, valLen), num = 0;
-                                let filter = [];
-                                for (let j = 0; j < valLen; j++) {
-                                    $.each(val, (k, v) => {
-                                        if (-1 === filter.indexOf(j)) {
-                                            if (0 <= v.indexOf(tmpStr[j])) {
-                                                num += 1;
-                                                filter.push(j);
-                                            }
-                                        }
-                                    })
-                                }
-                                if (num >= valLen) {
-                                    if (-1 !== str.indexOf(tmpStr + 'Q')) {
-                                        res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
-                                    }
-                                    if (-1 !== str.indexOf('Q' + tmpStr)) {
-                                        res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
-                                    }
-                                }
-                            }
-                        }
-                    })
-                }
-            })
+            let list = noEDRule();
+            let res = match(list, str);
             $.each(res, (k, v) => {
-                $('#no-ed').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+                if (matchNum(rule = [
+                    ['Q'],
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                ], v)) {
+                    $('#no-ed').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+                }
             })
         }
 
         function init() {
-            $('#no-q').html();
-            $('#no-kr').html();
-            $('#no-filv').html();
-            $('#no-ed').html();
+            $('#no-q').html('');
+            $('#no-kr').html('');
+            $('#no-filv').html('');
+            $('#no-ed').html('');
         }
 
         $('#btn-match').on('click', (e) => {
