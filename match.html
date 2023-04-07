@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>氨基酸序列匹配</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入 Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shiv 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <!--[if lt IE 9]>
+         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+         <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+      <![endif]-->
+</head>
+
+<body>
+    <div class="container">
+        <h1>氨基酸匹配查询</h1>
+        <form role="form">
+            <div class="form-group">
+                <label for="name">氨基酸序列</label>
+                <textarea id="match-str" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <button type="button" id="btn-match" class="btn btn-primary">提交</button>
+            </div>
+            <div class="form-group">
+                <label for="name">不包含Q的序列</label>
+                <div id="no-q" class="col-sm-12"></div>
+            </div>
+            <div class="form-group">
+                <label for="name">不包含[K, R]的序列</label>
+                <div id="no-kr" class="col-sm-12"></div>
+            </div>
+            <div class="form-group">
+                <label for="name">不包含[F, I, L, V]的序列</label>
+                <div id="no-filv" class="col-sm-12"></div>
+            </div>
+            <div class="form-group">
+                <label for="name">不包含[E, D]的序列</label>
+                <div id="no-ed" class="col-sm-12"></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- jQuery (Bootstrap 的 JavaScript 插件需要引入 jQuery) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script>
+        // eg. SKMSDVKCTSVVLLSVLQQLRVESSSKLWAQCVQLHNDILLAKDTTEAFEKMVSLLSVLLSMQGAVDINKLCEEMLDNRATLQ
+        /**
+         * const matchRule = [
+         *      ['Q']
+         *      ['k', 'R'],
+         *      ['F', 'I', 'L', 'V'],
+         *      ['E', 'D'],
+         *  ];
+         **/
+
+        /**
+         * 不满足Q
+         */
+        function noQRule() {
+            return [
+                [
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D'],
+                ],
+                [
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D'],
+                ],
+                [
+                    ['K', 'R'],
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D'],
+                ],
+                [
+                    ['K', 'R'],
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D'],
+                ]
+            ];
+            /*
+            let list = [];
+            // KR 出现一次
+            $.each(['K', 'R'], (k1, v1) => {
+                // F I L V 出现一次
+                $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
+                    $.each(['E', 'D'], (k3, v3) => {
+                        list.push([v1, v2, v3]);
+                    })
+                    // F I L V 出现两次
+                    $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
+                        $.each(['E', 'D'], (k3, v3) => {
+                            list.push([v1, v2, v2, v3]);
+                        })
+                    })
+                })
+                // KR 出现两次
+                $.each(['K', 'R'], (k4, v4) => {
+                    // F I L V 出现一次
+                    $.each(['F', 'I', 'L', 'V'], (k5, v5) => {
+                        $.each(['E', 'D'], (k6, v6) => {
+                            list.push([v1, v4, v5, v6]);
+                        })
+                    })
+                })
+            })
+            // console.log(list, list.length, 63);
+
+            return list;*/
+        }
+
+        /**
+         * 不满足 KR
+         */
+        function noKRRule() {
+            return [
+                [
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D'],
+                ],
+                [
+                    ['F', 'I', 'L', 'V'],
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D'],
+                ],
+                [
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D'],
+                ],
+                [
+                    ['F', 'I', 'L', 'V'],
+                    ['F', 'I', 'L', 'V'],
+                    ['E', 'D'],
+                ]
+            ];
+            /*let list = [];
+            let v1 = 'Q';
+            // F I L V 出现一次
+            $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
+                $.each(['E', 'D'], (k3, v3) => {
+                    list.push([v1, v2, v3]);
+                    list.push([v2, v3, v1]);
+                })
+                // F I L V 出现两次
+                $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
+                    $.each(['E', 'D'], (k3, v3) => {
+                        list.push([v1, v2, v2, v3]);
+                        list.push([v2, v2, v3, v1]);
+                    })
+                })
+            })
+            // console.log(list, list.length, 107);
+            return list;*/
+        }
+
+        /**
+         * 不满足 F I L V
+         */
+        function noFILVRule() {
+            return [
+                [
+                    ['K', 'R'],
+                    ['E', 'D'],
+                ],
+                [
+                    ['K', 'R'],
+                    ['K', 'R'],
+                    ['E', 'D'],
+                ],
+                [
+                    ['K', 'R'],
+                    ['E', 'D'],
+                ],
+                [
+                    ['K', 'R'],
+                    ['K', 'R'],
+                    ['E', 'D'],
+                ]
+            ];
+            /*let list = [];
+            let v1 = 'Q';
+            // K R 出现一次
+            $.each(['K', 'R'], (k2, v2) => {
+                $.each(['E', 'D'], (k3, v3) => {
+                    list.push([v1, v2, v3]);
+                    list.push([v2, v3, v1]);
+                })
+                // F I L V 出现两次
+                $.each(['K', 'R'], (k2, v2) => {
+                    $.each(['E', 'D'], (k3, v3) => {
+                        list.push([v1, v2, v2, v3]);
+                        list.push([v2, v2, v3, v1]);
+                    })
+                })
+            })
+            // console.log(list, list.length, 137);
+            return list;*/
+        }
+
+        /**
+         * 不满足 E D
+         */
+        function noEDRule() {
+            return [
+                [
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                ],
+                [
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                    ['F', 'I', 'L', 'V'],
+                ],
+                [
+                    ['K', 'R'],
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                ],
+                [
+                    ['K', 'R'],
+                    ['K', 'R'],
+                    ['F', 'I', 'L', 'V'],
+                    ['F', 'I', 'L', 'V'],
+                ]
+            ];
+            /*let list = [];
+            // KR 出现一次
+            $.each(['K', 'R'], (k1, v1) => {
+                // F I L V 出现一次
+                $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
+                    list.push(['Q', v1, v2]);
+                    list.push([v1, v2, 'Q']);
+                    // F I L V 出现两次
+                    $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
+                        list.push(['Q', v1, v2, v2]);
+                        list.push([v1, v2, v2, 'Q']);
+                    })
+                })
+                // KR 出现两次
+                $.each(['K', 'R'], (k4, v4) => {
+                    // F I L V 出现一次
+                    $.each(['F', 'I', 'L', 'V'], (k5, v5) => {
+                        list.push(['Q', v1, v4, v5]);
+                        list.push([v1, v4, v5, 'Q']);
+                    })
+                })
+            })
+            // console.log(list, list.length, 168);
+
+            return list;*/
+        }
+
+        function matchNoQRule(str) {
+            let list = noQRule(), strLen = str.length, res = {};
+            let strArr = str.split('Q');
+            $.each(strArr, (index, item) => {
+                let itemLen = item.length;
+                $.each(list, (key, val) => {
+                    let valLen = val.length;
+                    if (itemLen >= valLen) {
+                        for (let i = 0; i <= itemLen - valLen; i++) {
+                            let tmpStr = item.substr(i, valLen), num = 0;
+                            let filter = [];
+                            for (let j = 0; j < valLen; j++) {
+                                $.each(val, (k, v) => {
+                                    if (-1 === filter.indexOf(j)) {
+                                        if (0 <= v.indexOf(tmpStr[j])) {
+                                            num += 1;
+                                            filter.push(j);
+                                        }
+                                    }
+                                })
+                            }
+                            if (num >= valLen) {
+                                let strIndex = str.indexOf(tmpStr);
+                                res[strIndex + 1] = tmpStr;
+                            }
+                        }
+                    }
+                })
+            })
+            $.each(res, (k, v) => {
+                $('#no-q').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+            })
+        }
+
+        function matchNoKRRule(str) {
+            let list = noKRRule(), strArr = str.split('Q'), res = {};
+            $.each(strArr, (index, item) => {
+                let itemLen = item.length;
+                if (itemLen > 0) {
+                    $.each(list, (key, val) => {
+                        let valLen = val.length;
+                        if (itemLen >= valLen) {
+                            let tmpStr = item.substr(-valLen), num = 0;
+                            let filter = [];
+                            for (let j = 0; j < valLen; j++) {
+                                $.each(val, (k, v) => {
+                                    if (-1 === filter.indexOf(j)) {
+                                        if (0 <= v.indexOf(tmpStr[j])) {
+                                            num += 1;
+                                            filter.push(j);
+                                        }
+                                    }
+                                })
+                            }
+                            if (num >= valLen) {
+                                if (-1 !== str.indexOf(tmpStr + 'Q')) {
+                                    res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
+                                }
+                                if (-1 !== str.indexOf('Q' + tmpStr)) {
+                                    res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
+                                }
+                            }
+                            if (0 != index) {
+                                let tmpStr = item.substr(0, valLen), num = 0;
+                                let filter = [];
+                                for (let j = 0; j < valLen; j++) {
+                                    $.each(val, (k, v) => {
+                                        if (-1 === filter.indexOf(j)) {
+                                            if (0 <= v.indexOf(tmpStr[j])) {
+                                                num += 1;
+                                                filter.push(j);
+                                            }
+                                        }
+                                    })
+                                }
+                                if (num >= valLen) {
+                                    if (-1 !== str.indexOf(tmpStr + 'Q')) {
+                                        res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
+                                    }
+                                    if (-1 !== str.indexOf('Q' + tmpStr)) {
+                                        res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
+                                    }
+                                }
+                            }
+                        }
+                    })
+                }
+            })
+            $.each(res, (k, v) => {
+                $('#no-kr').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+            })
+        }
+
+        function matchNoFILVRule(str) {
+            let list = noFILVRule(), strArr = str.split('Q'), res = {};
+            $.each(strArr, (index, item) => {
+                let itemLen = item.length;
+                if (itemLen > 0) {
+                    $.each(list, (key, val) => {
+                        let valLen = val.length;
+                        if (itemLen >= valLen) {
+                            let tmpStr = item.substr(-valLen), num = 0;
+                            let filter = [];
+                            for (let j = 0; j < valLen; j++) {
+                                $.each(val, (k, v) => {
+                                    if (-1 === filter.indexOf(j)) {
+                                        if (0 <= v.indexOf(tmpStr[j])) {
+                                            num += 1;
+                                            filter.push(j);
+                                        }
+                                    }
+                                })
+                            }
+                            if (num >= valLen) {
+                                if (-1 !== str.indexOf(tmpStr + 'Q')) {
+                                    res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
+                                }
+                                if (-1 !== str.indexOf('Q' + tmpStr)) {
+                                    res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
+                                }
+                            }
+                            if (0 != index) {
+                                let tmpStr = item.substr(0, valLen), num = 0;
+                                let filter = [];
+                                for (let j = 0; j < valLen; j++) {
+                                    $.each(val, (k, v) => {
+                                        if (-1 === filter.indexOf(j)) {
+                                            if (0 <= v.indexOf(tmpStr[j])) {
+                                                num += 1;
+                                                filter.push(j);
+                                            }
+                                        }
+                                    })
+                                }
+                                if (num >= valLen) {
+                                    if (-1 !== str.indexOf(tmpStr + 'Q')) {
+                                        res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
+                                    }
+                                    if (-1 !== str.indexOf('Q' + tmpStr)) {
+                                        res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
+                                    }
+                                }
+                            }
+                        }
+                    })
+                }
+            })
+            $.each(res, (k, v) => {
+                $('#no-filv').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+            })
+        }
+
+        function matchNoEDRule(str) {
+            let list = noEDRule(), strArr = str.split('Q'), res = {};
+            $.each(strArr, (index, item) => {
+                let itemLen = item.length;
+                if (itemLen > 0) {
+                    $.each(list, (key, val) => {
+                        let valLen = val.length;
+                        if (itemLen >= valLen) {
+                            let tmpStr = item.substr(-valLen), num = 0;
+                            let filter = [];
+                            for (let j = 0; j < valLen; j++) {
+                                $.each(val, (k, v) => {
+                                    if (-1 === filter.indexOf(j)) {
+                                        if (0 <= v.indexOf(tmpStr[j])) {
+                                            num += 1;
+                                            filter.push(j);
+                                        }
+                                    }
+                                })
+                            }
+                            if (num >= valLen) {
+                                if (-1 !== str.indexOf(tmpStr + 'Q')) {
+                                    res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
+                                }
+                                if (-1 !== str.indexOf('Q' + tmpStr)) {
+                                    res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
+                                }
+                            }
+                            if (0 != index) {
+                                let tmpStr = item.substr(0, valLen), num = 0;
+                                let filter = [];
+                                for (let j = 0; j < valLen; j++) {
+                                    $.each(val, (k, v) => {
+                                        if (-1 === filter.indexOf(j)) {
+                                            if (0 <= v.indexOf(tmpStr[j])) {
+                                                num += 1;
+                                                filter.push(j);
+                                            }
+                                        }
+                                    })
+                                }
+                                if (num >= valLen) {
+                                    if (-1 !== str.indexOf(tmpStr + 'Q')) {
+                                        res[str.indexOf(tmpStr + 'Q') + 1] = tmpStr + 'Q';
+                                    }
+                                    if (-1 !== str.indexOf('Q' + tmpStr)) {
+                                        res[str.indexOf('Q' + tmpStr) + 1] = 'Q' + tmpStr;
+                                    }
+                                }
+                            }
+                        }
+                    })
+                }
+            })
+            $.each(res, (k, v) => {
+                $('#no-ed').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
+            })
+        }
+
+        function init() {
+            $('#no-q').html();
+            $('#no-kr').html();
+            $('#no-filv').html();
+            $('#no-ed').html();
+        }
+
+        $('#btn-match').on('click', (e) => {
+            let str = $('#match-str').val();
+            if (!str) {
+                return false;
+            }
+            init();
+            matchNoQRule(str);
+            matchNoKRRule(str);
+            matchNoFILVRule(str);
+            matchNoEDRule(str);
+        })
+    </script>
+</body>
+
+</html>
