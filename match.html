@@ -52,10 +52,10 @@
         // eg. SKMSDVKCTSVVLLSVLQQLRVESSSKLWAQCVQLHNDILLAKDTTEAFEKMVSLLSVLLSMQGAVDINKLCEEMLDNRATLQ
         /**
          * const matchRule = [
-         *      ['Q']
+         *      ['Q', 'K']
          *      ['k', 'R'],
          *      ['F', 'I', 'L', 'V'],
-         *      ['E', 'D'],
+         *      ['E', 'D', 'S', 'T', 'Y'],
          *  ];
          **/
 
@@ -67,26 +67,26 @@
                 [
                     ['K', 'R'],
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ],
                 [
                     ['K', 'R'],
                     ['F', 'I', 'L', 'V'],
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ],
                 [
                     ['K', 'R'],
                     ['K', 'R'],
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ],
                 [
                     ['K', 'R'],
                     ['K', 'R'],
                     ['F', 'I', 'L', 'V'],
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ]
             ];
             /*
@@ -95,12 +95,12 @@
             $.each(['K', 'R'], (k1, v1) => {
                 // F I L V 出现一次
                 $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
-                    $.each(['E', 'D'], (k3, v3) => {
+                    $.each(['E', 'D', 'S', 'T', 'Y'], (k3, v3) => {
                         list.push([v1, v2, v3]);
                     })
                     // F I L V 出现两次
                     $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
-                        $.each(['E', 'D'], (k3, v3) => {
+                        $.each(['E', 'D', 'S', 'T', 'Y'], (k3, v3) => {
                             list.push([v1, v2, v2, v3]);
                         })
                     })
@@ -109,7 +109,7 @@
                 $.each(['K', 'R'], (k4, v4) => {
                     // F I L V 出现一次
                     $.each(['F', 'I', 'L', 'V'], (k5, v5) => {
-                        $.each(['E', 'D'], (k6, v6) => {
+                        $.each(['E', 'D', 'S', 'T', 'Y'], (k6, v6) => {
                             list.push([v1, v4, v5, v6]);
                         })
                     })
@@ -127,34 +127,34 @@
             return [
                 [
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ],
                 [
                     ['F', 'I', 'L', 'V'],
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ],
                 [
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ],
                 [
                     ['F', 'I', 'L', 'V'],
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ]
             ];
             /*let list = [];
             let v1 = 'Q';
             // F I L V 出现一次
             $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
-                $.each(['E', 'D'], (k3, v3) => {
+                $.each(['E', 'D', 'S', 'T', 'Y'], (k3, v3) => {
                     list.push([v1, v2, v3]);
                     list.push([v2, v3, v1]);
                 })
                 // F I L V 出现两次
                 $.each(['F', 'I', 'L', 'V'], (k2, v2) => {
-                    $.each(['E', 'D'], (k3, v3) => {
+                    $.each(['E', 'D', 'S', 'T', 'Y'], (k3, v3) => {
                         list.push([v1, v2, v2, v3]);
                         list.push([v2, v2, v3, v1]);
                     })
@@ -171,34 +171,34 @@
             return [
                 [
                     ['K', 'R'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ],
                 [
                     ['K', 'R'],
                     ['K', 'R'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ],
                 [
                     ['K', 'R'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ],
                 [
                     ['K', 'R'],
                     ['K', 'R'],
-                    ['E', 'D'],
+                    ['E', 'D', 'S', 'T', 'Y'],
                 ]
             ];
             /*let list = [];
             let v1 = 'Q';
             // K R 出现一次
             $.each(['K', 'R'], (k2, v2) => {
-                $.each(['E', 'D'], (k3, v3) => {
+                $.each(['E', 'D', 'S', 'T', 'Y'], (k3, v3) => {
                     list.push([v1, v2, v3]);
                     list.push([v2, v3, v1]);
                 })
                 // F I L V 出现两次
                 $.each(['K', 'R'], (k2, v2) => {
-                    $.each(['E', 'D'], (k3, v3) => {
+                    $.each(['E', 'D', 'S', 'T', 'Y'], (k3, v3) => {
                         list.push([v1, v2, v2, v3]);
                         list.push([v2, v2, v3, v1]);
                     })
@@ -294,7 +294,7 @@
                 if (matchNum(rule = [
                     ['K', 'R'],
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D']
+                    ['E', 'D', 'S', 'T', 'Y']
                 ], v)) {
                     $('#no-q').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
                 }
@@ -383,9 +383,9 @@
             let res = match(list, str);
             $.each(res, (k, v) => {
                 if (matchNum(rule = [
-                    ['Q'],
+                    ['Q', 'K'],
                     ['F', 'I', 'L', 'V'],
-                    ['E', 'D']
+                    ['E', 'D', 'S', 'T', 'Y']
                 ], v)) {
                     $('#no-kr').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
                 }
@@ -397,9 +397,9 @@
             let res = match(list, str);
             $.each(res, (k, v) => {
                 if (matchNum(rule = [
-                    ['Q'],
+                    ['Q', 'K'],
                     ['K', 'R'],
-                    ['E', 'D']
+                    ['E', 'D', 'S', 'T', 'Y']
                 ], v)) {
                     $('#no-filv').append(`<div class="col-sm-2">第${k}位起: ${v}</div>`);
                 }
@@ -411,7 +411,7 @@
             let res = match(list, str);
             $.each(res, (k, v) => {
                 if (matchNum(rule = [
-                    ['Q'],
+                    ['Q', 'K'],
                     ['K', 'R'],
                     ['F', 'I', 'L', 'V'],
                 ], v)) {
