@@ -1,7 +1,5 @@
-# [zbl749.github.io](https://zbl749.github.io)
-zbl homepage.
+# zbl's [homepage](https://zbl749.github.io).
 
-## [Matching amino acid sequences](https://zbl749.github.io/match.html)
+- [Matching amino acid sequences](https://zbl749.github.io/match.html)
 
-
-## [Mysqldump command tool](https://zbl749.github.io/mysqldump.html)
+- [Mysqldump command tool](https://zbl749.github.io/mysqldump.html)
