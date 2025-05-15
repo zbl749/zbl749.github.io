@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mysqldump Command create tool</title>
+</head>
+<body>
+    <!-- header -->
+    <h1>Create a mysqldump command</h1>
+    <!-- body -->
+    <form id="command-form">
+        <div class="env">
+            Env <span style="color: red;">*</span>:
+            <select name="env" id="env" required>
+                <option value="local">local</option>
+                <option value="remote">remote</option>
+            </select>
+        </div>
+        <div class="remote-address">
+            Remote Address:
+            <input type="text" id="remote-address" value="">
+        </div>
+        <div class="user">
+            User <span style="color: red;">*</span>:
+            <input type="text" id="user" value="" placeholder="Please type the user name" required>
+        </div>
+        <div class="password">
+            Password:
+            <input type="text" id="password" value="" placeholder="Please type the password">
+        </div>
+        <div class="database">
+            Database Name <span style="color: red;">*</span>:
+            <input type="text" id="database" value="" required>
+        </div>
+        <div class="ignore-table">
+            Ignore Table:
+            <input type="text" id="ignore-table" value="">
+        </div>
+        <div class="filepath">
+            Output Filepath:
+            <input type="text" id="output-filepath" value="">
+        </div>
+        <div class="button">
+            <input type="submit" id="submit" value="submit">
+        </div>    
+    </form>
+    <div class="result">
+        <h2>Result</h2>
+        <div id="result"></div>
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery.js"></script>
+<script>
+    var env = 'local';
+    $(function() {
+        $('.result').hide();
+        function changeEnv () {
+            if ('local' === env) {
+                $('.remote-address').hide();
+            } else {
+                $('.remote-address').show()
+            }
+        }
+
+        changeEnv();
+
+        $('#env').change(function () {
+            env = this.value;
+            changeEnv();
+        })
+
+        $('#command-form').on('submit', function(event) {
+            event.preventDefault();
+
+            let remoteAddress = $('#remote-address').val(),
+                user = $('#user').val(),
+                password = $('#password').val(),
+                database = $('#database').val(),
+                ignoreTable = $('#ignore-table').val(),
+                outputFilepath = $('#output-filepath').val();
+
+            let command = 'mysqldump ';
+            if ('remote' === env) {
+                command += '-h ' + remoteAddress;
+            }
+            command += ' -u ' + user;
+            if (password) {
+                command += ' -password=' + password;
+            }
+            if (ignoreTable) {
+                command += ' --ignore-table=' + database + '.' + ignoreTable
+            }
+            command += ' ' + database
+            command += ' > ' + outputFilepath;
+            $('#result').html(command);
+            $('.result').show();
+
+        });
+    })
+</script>
+</html>
