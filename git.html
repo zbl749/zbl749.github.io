@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git 使用手册 - 完整指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f05032;
+            --secondary-color: #2e86de;
+            --dark-bg: #1e1e1e;
+            --light-bg: #f8f9fa;
+            --text-color: #333;
+            --code-bg: #f6f8fa;
+            --border-color: #e1e4e8;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #d73a49);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background-color: var(--light-bg);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        main {
+            padding: 30px 0;
+        }
+
+        section {
+            margin-bottom: 50px;
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        h3::before {
+            content: "▸";
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        h4 {
+            font-size: 1.1em;
+            margin: 20px 0 10px 0;
+            color: #555;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        code {
+            background-color: var(--code-bg);
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e01e5a;
+        }
+
+        pre {
+            background-color: var(--dark-bg);
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2d2d2d;
+            padding: 8px 15px;
+            border-radius: 6px 6px 0 0;
+            font-size: 0.85em;
+        }
+
+        .copy-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: #1e5a8e;
+            transform: scale(1.05);
+        }
+
+        .copy-btn.copied {
+            background-color: var(--success-color);
+        }
+
+        .tip {
+            background-color: #e3f2fd;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .tip::before {
+            content: "💡 提示：";
+            font-weight: bold;
+        }
+
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid var(--warning-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .warning::before {
+            content: "⚠️ 注意：";
+            font-weight: bold;
+        }
+
+        .best-practice {
+            background-color: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .best-practice::before {
+            content: "✅ 最佳实践：";
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        .workflow-diagram {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        footer {
+            background-color: var(--dark-bg);
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+        }
+
+        .scroll-to-top:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .nav-links {
+                gap: 8px;
+            }
+
+            .nav-links a {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
+
+            section {
+                padding: 15px;
+            }
+
+            pre {
+                padding: 15px;
+            }
+
+            .code-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .copy-btn {
+                align-self: flex-end;
+            }
+        }
+
+        /* 代码高亮样式 */
+        .hljs-comment { color: #6a737d; }
+        .hljs-string { color: #032f62; }
+        .hljs-keyword { color: #d73a49; }
+        .hljs-function { color: #6f42c1; }
+        .hljs-number { color: #005cc5; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Git 使用手册</h1>
+            <p class="subtitle">从入门到精通的完整指南</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <div class="nav-links">
+                <a href="#basics">基础概念</a>
+                <a href="#config">初始配置</a>
+                <a href="#basic-ops">基础操作</a>
+                <a href="#branch">分支管理</a>
+                <a href="#remote">远程操作</a>
+                <a href="#undo">撤销回退</a>
+                <a href="#tags">标签管理</a>
+                <a href="#stash">储藏功能</a>
+                <a href="#tips">实用技巧</a>
+                <a href="#workflow">工作流</a>
+                <a href="#faq">常见问题</a>
+                <a href="#best-practices">最佳实践</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section id="basics">
+            <h2>一、基础概念</h2>
+            <ul>
+                <li><strong>工作区(Workspace)</strong>: 你本地看到的项目文件</li>
+                <li><strong>暂存区(Index/Stage)</strong>: 临时存放改动，<code>.git/index</code> 文件</li>
+                <li><strong>仓库(Repository)</strong>: 提交历史，<code>.git</code> 目录</li>
+                <li><strong>HEAD</strong>: 指向当前分支的最新提交</li>
+            </ul>
+        </section>
+
+        <section id="config">
+            <h2>二、初始配置</h2>
+            <div class="code-header">
+                <span>Git 配置命令</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 设置用户信息(全局)
+git config --global user.name "你的名字"
+git config --global user.email "your.email@example.com"
+
+# 设置文本编辑器
+git config --global core.editor "vim"  # 或 "code --wait"
+
+# 查看配置
+git config --list
+
+# 创建别名
+git config --global alias.co checkout
+git config --global alias.br branch
+git config --global alias.ci commit
+git config --global alias.st status</code></pre>
+        </section>
+
+        <section id="basic-ops">
+            <h2>三、基础操作</h2>
+            
+            <h3>1. 初始化与克隆</h3>
+            <div class="code-header">
+                <span>仓库初始化与克隆</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 初始化新仓库
+git init
+
+# 克隆远程仓库
+git clone https://github.com/user/repo.git
+git clone https://github.com/user/repo.git my-folder  # 指定目录名</code></pre>
+
+            <h3>2. 基本工作流程</h3>
+            <div class="code-header">
+                <span>日常Git工作流程</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 查看状态
+git status
+git status -s  # 简洁模式
+
+# 添加文件到暂存区
+git add file.txt           # 指定文件
+git add .                  # 当前目录所有改动
+git add -A                 # 所有改动(包括删除)
+
+# 提交改动
+git commit -m "提交信息"
+git commit -m "标题" -m "详细描述"  # 多行信息
+git commit -a -m "信息"   # 跳过add,自动添加已跟踪文件的改动
+
+# 查看提交历史
+git log
+git log --oneline         # 简洁一行
+git log --graph --oneline --all --decorate  # 图形化显示</code></pre>
+
+            <h3>3. 查看差异</h3>
+            <div class="code-header">
+                <span>Git差异查看命令</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash">git diff                  # 工作区 vs 暂存区
+git diff --cached         # 暂存区 vs 最新提交
+git diff HEAD             # 工作区 vs 最新提交
+git diff branch1 branch2  # 比较两个分支</code></pre>
+        </section>
+
+        <section id="branch">
+            <h2>四、分支管理</h2>
+            
+            <h3>1. 基本操作</h3>
+            <div class="code-header">
+                <span>分支基本操作命令</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 查看分支
+git branch                  # 本地分支
+git branch -a               # 所有分支(包括远程)
+git branch -r               # 仅远程分支
+
+# 创建与切换
+git branch feature          # 创建分支
+git checkout feature        # 切换分支
+git checkout -b feature     # 创建并切换
+
+# 重命名分支
+git branch -m old-name new-name
+
+# 删除分支
+git branch -d feature       # 安全删除(已合并)
+git branch -D feature       # 强制删除</code></pre>
+
+            <h3>2. 合并与变基</h3>
+            <div class="code-header">
+                <span>合并与变基操作</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 合并分支到当前分支
+git merge feature           # 会保留合并历史
+git merge --no-ff feature   # 强制创建合并提交
+
+# 变基(保持线性历史)
+git rebase main             # 将当前分支变基到main
+
+# 解决冲突
+# 1. 手动编辑冲突文件
+# 2. git add .
+# 3. git commit 或 git rebase --continue</code></pre>
+
+            <h3>3. 远程分支</h3>
+            <div class="code-header">
+                <span>远程分支操作</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 推送分支
+git push origin feature
+git push -u origin feature  # 设置上游分支,后续可直接git push
+
+# 拉取远程分支
+git fetch origin
+git checkout -b feature origin/feature
+
+# 删除远程分支
+git push origin --delete feature
+git push origin :feature    # 旧语法</code></pre>
+        </section>
+
+        <section id="remote">
+            <h2>五、远程操作</h2>
+            <div class="code-header">
+                <span>远程仓库操作命令</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 查看远程仓库
+git remote -v
+
+# 添加远程仓库
+git remote add upstream https://github.com/original/repo.git
+
+# 获取远程更新
+git fetch origin          # 获取但不合并
+git pull origin main      # 获取并合并(= fetch + merge)
+git pull --rebase origin main  # 获取并变基(推荐)
+
+# 推送更新
+git push origin main
+git push -f origin main   # 强制推送(谨慎使用!)</code></pre>
+        </section>
+
+        <section id="undo">
+            <h2>六、撤销与回退</h2>
+            <div class="code-header">
+                <span>撤销与回退命令</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 撤销工作区改动
+git checkout -- file.txt  # 恢复文件到暂存区状态
+git restore file.txt      # Git 2.23+ 新命令
+
+# 撤销暂存区改动
+git reset HEAD file.txt   # 取消add
+git restore --staged file.txt  # Git 2.23+
+
+# 修改最后一次提交
+git commit --amend -m "新信息"
+git commit --amend --no-edit  # 不改信息,只添加改动
+
+# 回退到指定提交
+git reset --soft HEAD~1   # 只移动HEAD,保留改动在暂存区
+git reset --mixed HEAD~1  # 移动HEAD,改动在工作区(默认)
+git reset --hard HEAD~1   # 彻底回退,丢弃改动
+
+# 查看操作记录
+git reflog                # 查看所有HEAD变动</code></pre>
+        </section>
+
+        <section id="tags">
+            <h2>七、标签管理</h2>
+            <div class="code-header">
+                <span>标签管理命令</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 创建标签
+git tag v1.0.0            # 轻量标签
+git tag -a v1.0.0 -m "版本说明"  # 附注标签
+git tag v1.0.0 commit-id  # 对指定提交打标签
+
+# 查看标签
+git tag
+git show v1.0.0
+
+# 推送标签
+git push origin v1.0.0
+git push origin --tags    # 推送所有标签
+
+# 删除标签
+git tag -d v1.0.0
+git push origin --delete v1.0.0  # 删除远程标签</code></pre>
+        </section>
+
+        <section id="stash">
+            <h2>八、储藏(Stash)</h2>
+            <div class="code-header">
+                <span>储藏功能命令</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 保存当前改动
+git stash
+git stash save "说明"
+
+# 查看储藏列表
+git stash list
+
+# 应用储藏
+git stash apply           # 应用最新储藏
+git stash apply stash@{1} # 应用指定储藏
+git stash pop             # 应用并删除最新储藏
+
+# 删除储藏
+git stash drop stash@{1}
+git stash clear           # 清空所有储藏</code></pre>
+        </section>
+
+        <section id="tips">
+            <h2>九、实用技巧</h2>
+            
+            <h3>1. 交互式操作</h3>
+            <div class="code-header">
+                <span>交互式Git命令</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash">git add -i              # 交互式添加
+git rebase -i HEAD~3    # 交互式变基(合并、修改、删除提交)</code></pre>
+
+            <h3>2. 搜索与查找</h3>
+            <div class="code-header">
+                <span>Git搜索命令</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash">git blame file.txt      # 查看每行代码最后修改者
+git grep "关键字"        # 在版本库中搜索
+git log -S "function"   # 搜索提交中新增/删除某字符串的历史</code></pre>
+
+            <h3>3. 子模块</h3>
+            <div class="code-header">
+                <span>Git子模块操作</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash">git submodule add https://github.com/user/repo.git path/to/submodule
+git submodule update --init --recursive</code></pre>
+
+            <h3>4. 大文件管理(LFS)</h3>
+            <div class="code-header">
+                <span>Git LFS使用</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash">git lfs install
+git lfs track "*.psd"
+git add .gitattributes</code></pre>
+        </section>
+
+        <section id="workflow">
+            <h2>十、推荐工作流</h2>
+            
+            <h3>1. 功能分支工作流</h3>
+            <div class="code-header">
+                <span>功能分支工作流示例</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 开始新功能
+git checkout -b feature/user-auth
+
+# 开发完成后
+git add .
+git commit -m "feat: 用户认证功能"
+git push origin feature/user-auth
+
+# 创建Pull Request合并到main</code></pre>
+
+            <h3>2. Git Flow工作流</h3>
+            <div class="workflow-diagram">
+main (保护分支)  ────────────────────────────────────►
+                \                                 /
+develop  ────────►───►───────────────────────────►
+          \      /    \                         /
+feature-a  ─►───►      \                       /
+                        \                     /
+feature-b                ─►───►──────────────►
+            </div>
+
+            <h3>3. Fork工作流(开源贡献)</h3>
+            <div class="code-header">
+                <span>Fork工作流步骤</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 1. Fork仓库到个人账号
+# 2. 克隆个人仓库
+git clone https://github.com/your/repo.git
+
+# 3. 添加上游仓库
+git remote add upstream https://github.com/original/repo.git
+
+# 4. 创建功能分支开发
+git checkout -b fix/bug-123
+
+# 5. 定期同步上游
+git fetch upstream
+git rebase upstream/main
+
+# 6. 推送到个人仓库
+git push origin fix/bug-123
+
+# 7. 创建Pull Request</code></pre>
+        </section>
+
+        <section id="faq">
+            <h2>十一、常见问题解决</h2>
+            
+            <h3>1. 误提交大文件</h3>
+            <div class="code-header">
+                <span>解决误提交大文件</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash">git reset --soft HEAD~1
+echo "large-file.zip" >> .gitignore
+git rm --cached large-file.zip
+git commit -m "重新提交"</code></pre>
+
+            <h3>2. 合并冲突</h3>
+            <div class="code-header">
+                <span>解决合并冲突</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 查看冲突文件
+git status
+
+# 手动解决冲突后
+git add .
+git commit  # 或使用git rebase --continue</code></pre>
+
+            <h3>3. 修改历史提交</h3>
+            <div class="code-header">
+                <span>修改历史提交</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash"># 修改最近n个提交
+git rebase -i HEAD~n
+
+# 停止在需要修改的提交(将pick改为edit)
+# 修改后
+git commit --amend
+git rebase --continue</code></pre>
+
+            <h3>4. 恢复被删除的分支</h3>
+            <div class="code-header">
+                <span>恢复删除的分支</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+            </div>
+            <pre><code class="language-bash">git reflog
+git checkout -b branch-name commit-id</code></pre>
+        </section>
+
+        <section id="best-practices">
+            <h2>十二、最佳实践</h2>
+            <div class="best-practice">
+                使用清晰、简洁的提交信息，推荐 Conventional Commits 规范：
+                <ul>
+                    <li><code>feat:</code> 新功能</li>
+                    <li><code>fix:</code> 修复bug</li>
+                    <li><code>docs:</code> 文档</li>
+                    <li><code>style:</code> 格式</li>
+                    <li><code>refactor:</code> 重构</li>
+                    <li><code>test:</code> 测试</li>
+                    <li><code>chore:</code> 杂项</li>
+                </ul>
+            </div>
+
+            <div class="best-practice">频繁提交：小而频繁的提交比大提交更容易管理</div>
+            <div class="best-practice">及时推送：定期推送本地提交到远程</div>
+            <div class="best-practice">分支保护：对 main/master 分支设置保护规则，禁止直接push</div>
+            <div class="best-practice">代码审查：使用 Pull Request 进行代码审查</div>
+            <div class="best-practice">保持同步：定期 pull 或 rebase 上游更新，减少冲突</div>
+            <div class="best-practice">清理历史：合并功能分支前使用 rebase 整理提交历史</div>
+        </section>
+
+        <div class="tip">
+            <strong>提示：</strong>记不住命令时，使用 <code>git help &lt;command&gt;</code> 或 <code>git &lt;command&gt; --help</code> 查看详细文档。例如：<code>git help rebase</code>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Git 使用手册 | 由 AI 助手生成 | 持续更新中</p>
+            <p>最后更新：2024年12月</p>
+        </div>
+    </footer>
+
+    <div class="scroll-to-top" id="scrollTop" onclick="scrollToTop()">
+        ↑
+    </div>
+
+    <script>
+        // 复制代码功能
+        function copyCode(button) {
+            const codeBlock = button.parentElement.nextElementSibling;
+            const code = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = '已复制!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = '复制代码';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // 滚动到顶部功能
+        const scrollTopBtn = document.getElementById('scrollTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+        
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // 平滑滚动到锚点
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 100;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // 简单的代码高亮
+        document.querySelectorAll('pre code').forEach(block => {
+            // 为注释添加样式
+            block.innerHTML = block.innerHTML.replace(/(#.*$)/gm, '<span class="hljs-comment">$1</span>');
+            
+            // 为字符串添加样式
+            block.innerHTML = block.innerHTML.replace(/(["'`])([^"'`]*?)\1/g, '<span class="hljs-string">$1$2$1</span>');
+            
+            // 为关键字添加样式
+            const keywords = ['git', 'add', 'commit', 'push', 'pull', 'fetch', 'merge', 'rebase', 'checkout', 'branch', 'reset', 'clone', 'status', 'log', 'diff'];
+            keywords.forEach(keyword => {
+                const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+                block.innerHTML = block.innerHTML.replace(regex, '<span class="hljs-keyword">' + keyword + '</span>');
+            });
+        });
+    </script>
+</body>
+</html>
